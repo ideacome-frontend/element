@@ -31,7 +31,7 @@
         :class="{ 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded }">
       </span>
       <el-checkbox
-        v-if="showCheckbox && node.data.showNodeCheckbox"
+        v-if="showCheckbox && node.showNodeCheckbox"
         v-model="node.checked"
         :indeterminate="node.indeterminate"
         :disabled="!!node.disabled"
