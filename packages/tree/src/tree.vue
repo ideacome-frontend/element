@@ -112,7 +112,7 @@
             label: 'label',
             icon: 'icon',
             disabled: 'disabled',
-            isShowNodeCheckbox: 'isShowNodeCheckbox'
+            noShowNodeCheckbox: 'noShowNodeCheckbox'
           };
         }
       },
