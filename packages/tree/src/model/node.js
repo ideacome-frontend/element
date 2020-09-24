@@ -156,6 +156,10 @@ export default class Node {
     return getPropertyFromData(this, 'label');
   }
 
+  get noShowNodeCheckbox() {
+    return getPropertyFromData(this, 'noShowNodeCheckbox');
+  }
+
   get icon() {
     return getPropertyFromData(this, 'icon');
   }

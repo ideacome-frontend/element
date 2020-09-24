@@ -111,7 +111,8 @@
             children: 'children',
             label: 'label',
             icon: 'icon',
-            disabled: 'disabled'
+            disabled: 'disabled',
+            noShowNodeCheckbox: 'noShowNodeCheckbox'
           };
         }
       },
