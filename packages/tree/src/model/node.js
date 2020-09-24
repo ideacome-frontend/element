@@ -1,5 +1,6 @@
 import objectAssign from 'element-ui/src/utils/merge';
 import { markNodeData, NODE_KEY } from './util';
+import { arrayFindIndex } from 'element-ui/src/utils/util';
 
 export const getChildState = node => {
   let all = true;
@@ -71,6 +72,7 @@ export default class Node {
     this.expanded = false;
     this.parent = null;
     this.visible = true;
+    this.isCurrent = false;
 
     for (let name in options) {
       if (options.hasOwnProperty(name)) {
@@ -123,6 +125,7 @@ export default class Node {
 
     if (key && store.currentNodeKey !== undefined && this.key === store.currentNodeKey) {
       store.currentNode = this;
+      store.currentNode.isCurrent = true;
     }
 
     if (store.lazy) {
@@ -158,10 +161,6 @@ export default class Node {
 
   get noShowNodeCheckbox() {
     return getPropertyFromData(this, 'noShowNodeCheckbox');
-  }
-
-  get icon() {
-    return getPropertyFromData(this, 'icon');
   }
 
   get key() {
@@ -289,11 +288,13 @@ export default class Node {
 
   removeChildByData(data) {
     let targetNode = null;
-    this.childNodes.forEach(node => {
-      if (node.data === data) {
-        targetNode = node;
+
+    for (let i = 0; i < this.childNodes.length; i++) {
+      if (this.childNodes[i].data === data) {
+        targetNode = this.childNodes[i];
+        break;
       }
-    });
+    }
 
     if (targetNode) {
       this.removeChild(targetNode);
@@ -318,7 +319,7 @@ export default class Node {
         if (data instanceof Array) {
           if (this.checked) {
             this.setChecked(true, true);
-          } else {
+          } else if (!this.store.checkStrictly) {
             reInitChecked(this);
           }
           done();
@@ -439,16 +440,20 @@ export default class Node {
     const newNodes = [];
 
     newData.forEach((item, index) => {
-      if (item[NODE_KEY]) {
-        newDataMap[item[NODE_KEY]] = { index, data: item };
+      const key = item[NODE_KEY];
+      const isNodeExists = !!key && arrayFindIndex(oldData, data => data[NODE_KEY] === key) >= 0;
+      if (isNodeExists) {
+        newDataMap[key] = { index, data: item };
       } else {
         newNodes.push({ index, data: item });
       }
     });
 
-    oldData.forEach((item) => {
-      if (!newDataMap[item[NODE_KEY]]) this.removeChildByData(item);
-    });
+    if (!this.store.lazy) {
+      oldData.forEach((item) => {
+        if (!newDataMap[item[NODE_KEY]]) this.removeChildByData(item);
+      });
+    }
 
     newNodes.forEach(({ index, data }) => {
       this.insertChild({ data }, index);
